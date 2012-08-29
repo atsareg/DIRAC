@@ -1944,10 +1944,11 @@ class ReplicaManager( CatalogToStorage ):
       gLogger.error( errStr, res['Message'] )
       return res
     successful = {}
+    failed = {}
     existingFiles = []
     for lfn, exists in res['Value']['Successful'].items():
       if not exists:
-        successful[lfn] = True
+        failed[lfn] = "File not found in the Catalog"
       else:
         existingFiles.append( lfn )
     res = self.fileCatalogue.getReplicas( existingFiles, True )
@@ -1956,7 +1957,7 @@ class ReplicaManager( CatalogToStorage ):
       gLogger.error( errStr, res['Message'] )
       return res
     lfnDict = res['Value']['Successful']
-    failed = res['Value']['Failed']
+    failed.update( res['Value']['Failed'] )
     for lfn, reason in failed.items():
       if reason == 'File has zero replicas':
         lfnDict[lfn] = {}
